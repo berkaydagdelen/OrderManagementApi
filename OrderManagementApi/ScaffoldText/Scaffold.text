@@ -1,0 +1,7 @@
+ 
+
+Berkay daðdelen için;
+
+Scaffold-DbContext "Server=.;Database=OrderManagement;trustservercertificate=true; trusted_connection=true" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entities -Force
+		
+ 
