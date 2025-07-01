@@ -2,9 +2,4 @@
 
 Berkay daðdelen için;
 
-Scaffold-DbContext "Server=.;Database=OrderManagement;trustservercertificate=true; trusted_connection=true" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entities -Force
-		
-
-Berkay daðdelen için (MONSTER);
-
- Scaffold-DbContext "Server=DESKTOP-83R1MUR;Database=OrderManagement;User Id=sa;Password=1234;TrustServerCertificate=True;Persist Security Info=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entities -Force
+Scaffold-DbContext "Server=DESKTOP-83R1MUR;Database=OrderManagement;User Id=sa;Password=1234;TrustServerCertificate=True;Persist Security Info=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entities -Force
