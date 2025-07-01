@@ -8,5 +8,6 @@ namespace OrderManagementApi.Service.Abstract
         Task<OrderItemSaveResponse> Save(OrderItemSaveRequest orderItemSaveRequest);
 
         Task<OrderItemUpdateResponse> Update(OrderItemUpdateRequest orderItemUpdateRequest);
+        Task<OrderItemDetailListResponse> GetOrders();
     }
 }

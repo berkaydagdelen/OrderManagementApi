@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using OrderManagementApi.DataAccess.Abstract;
@@ -20,9 +21,6 @@ builder.Services.AddDbContext<DbContext, OrderManagementContext>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 
-//builder.Services.AddMemoryCache();
-
-
 builder.Services.AddHttpClient();
 
 
@@ -39,6 +37,18 @@ builder.Services.AddScoped<IOrderItemService, OrderItemService>();
 builder.Services.AddScoped<IOrderItemMainManagerService, OrderItemMainManagerService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILoginService, LoginService>();
+
+
+builder.Services.AddHttpClient<TokenCacheService>();
+builder.Services.AddHttpClient<OrderService>();
+
+builder.Services.AddSingleton<TokenCacheService>(); 
+builder.Services.AddScoped<OrderService>();
+
+
+
+builder.Services.AddScoped<OrderService>();
 
 builder.Services.AddScoped<OrderSaveRequestValidator>();
 builder.Services.AddScoped<OrderUpdateRequestValidator>();
@@ -50,16 +60,34 @@ builder.Services.AddScoped<UserSaveRequestValidator>();
 builder.Services.AddScoped<UserUpdateRequestValidator>();
 
 
-builder.Services.AddHttpClient();  
+builder.Services.AddHttpClient();
 
 
 builder.Services.AddControllers();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var jwtSettings = builder.Configuration.GetSection("Jwt");
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+    };
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
-
 var app = builder.Build();
 
 
@@ -69,11 +97,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseHttpsRedirection();
+
 
 app.MapControllers();
 

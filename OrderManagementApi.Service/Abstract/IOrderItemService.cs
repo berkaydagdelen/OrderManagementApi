@@ -6,6 +6,7 @@ namespace OrderManagementApi.Service.Abstract
     public interface IOrderItemService
     {
         Task<OrderItemListResponse> List();
+        Task<OrderItemDetailListResponse> OrderList();
         Task<OrderItemDetailListResponse> OrderItemDetailList(OrderItemDetailListRequest orderItemListRequest);
         Task<OrderItemUserDetailListResponse> OrderItemUserDetailList(OrderItemUserDetailListRequest orderItemUserListRequest);
         Task<OrderItemSaveResponse> Save(OrderItemSaveRequest orderItemSaveRequest);
