@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OrderManagementApi.DTO.BedType.Request;
 using OrderManagementApi.DTO.BedType.Response;
 using OrderManagementApi.DTO.OrderItem.Request;
@@ -7,6 +8,7 @@ using OrderManagementApi.Service.Abstract;
 
 namespace OrderManagementApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OrderController : ControllerBase
@@ -20,12 +22,21 @@ namespace OrderManagementApi.Controllers
             _orderMainManagerService = orderMainManagerService;
             _orderItemService = orderItemService;
         }
+         
+
         [HttpGet]
         public async Task<ActionResult<OrderListResponse>> List()
         {
 
             OrderListResponse orderListResponse = await _orderService.List();
             return Ok(orderListResponse);
+        }
+        [HttpGet("OrderList")]
+        public async Task<ActionResult<OrderItemUserDetailListResponse>> OrderList()
+        {
+
+            OrderItemDetailListResponse orderItemDetailListResponse = await _orderItemService.OrderList();
+            return Ok(orderItemDetailListResponse);
         }
         [HttpPost("OrderItemUserDetailList")]
         public async Task<ActionResult<OrderItemUserDetailListResponse>> OrderItemUserDetailList(OrderItemUserDetailListRequest orderItemUserListRequest)
@@ -41,6 +52,7 @@ namespace OrderManagementApi.Controllers
             OrderItemDetailListResponse orderItemDetailListResponse = await _orderItemService.OrderItemDetailList(orderItemListRequest);
             return Ok(orderItemDetailListResponse);
         }
+
         [HttpPost]
         public async Task<ActionResult<OrderSaveResponse>> Save(OrderSaveRequest orderSaveRequest)
         {
@@ -60,7 +72,7 @@ namespace OrderManagementApi.Controllers
             OrderDeleteResponse orderDeleteResponse = await _orderMainManagerService.DeleteRange(orderDeleteRequest);
             return Ok(orderDeleteResponse);
         }
-      
+
         [HttpPut]
         public async Task<ActionResult<OrderUpdateResponse>> Update(OrderUpdateRequest orderUpdateRequest)
         {

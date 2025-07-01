@@ -13,6 +13,10 @@ public partial class User
 
     public string Email { get; set; } = null!;
 
+    public string? Username { get; set; }
+
+    public string? Password { get; set; }
+
     public DateTime? CreatedDate { get; set; }
 
     public int? CreatedById { get; set; }

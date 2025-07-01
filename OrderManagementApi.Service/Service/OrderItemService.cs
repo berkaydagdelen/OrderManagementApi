@@ -9,7 +9,6 @@ using OrderManagementApi.Service.Validator.OrderItem;
 using OrderManagementApi.Utility;
 using System.Data;
 using System.Net.Http.Headers;
-using System.Net.Http;
 
 namespace OrderManagementApi.Service.Service
 {
@@ -18,14 +17,16 @@ namespace OrderManagementApi.Service.Service
         private readonly IOrderItemRepository _orderItemRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
-  
- 
+        private readonly HttpClient _httpClient;
+        private readonly TokenCacheService _tokenCache;
 
-        public OrderItemService(IOrderItemRepository orderItemRepository, IOrderRepository orderRepository, IMapper mapper)
+        public OrderItemService(IOrderItemRepository orderItemRepository, IOrderRepository orderRepository, IMapper mapper, HttpClient httpClient, TokenCacheService tokenCache)
         {
             _orderItemRepository = orderItemRepository;
             _orderRepository = orderRepository;
             _mapper = mapper;
+            _httpClient = httpClient;
+            _tokenCache = tokenCache;
         }
 
         public async Task<OrderItemListResponse> List()
@@ -52,7 +53,42 @@ namespace OrderManagementApi.Service.Service
             }
             return response;
         }
+        public async Task<OrderItemDetailListResponse> OrderList()
+        {
+            OrderItemDetailListResponse response = new OrderItemDetailListResponse();
+            try
+            { 
+                
 
+                IList<OrderItem> orderDetailItems = await _orderItemRepository.GetAllAsync(
+                 oi => oi.IsActive == true,
+                 oi => oi.Order,
+                 oi => oi.Product);
+
+                if (!orderDetailItems.Any())
+                {
+                    response.GenerateErrorResponse(MessageConstants.RECORD_NOT_FOUND);
+                    return response;
+
+                }
+
+                response.OrderItemDetails = orderDetailItems.Select(oi => new OrderItemDetailDto
+                {
+                    OrderDate = oi.Order.OrderDate,
+                    Name = oi.Product.Name,
+                    Quantity = oi.Quantity,
+                    UnitPrice = oi.UnitPrice,
+                    TotalPrice = oi.TotalPrice
+                }).ToList();
+                response.GenerateSuccessResponse();
+
+            }
+            catch (Exception ex)
+            {
+                response.GenerateErrorResponse(ex.Message);
+            }
+            return response;
+        }
         public async Task<OrderItemUserDetailListResponse> OrderItemUserDetailList(OrderItemUserDetailListRequest orderItemUserListRequest)
         {
             OrderItemUserDetailListResponse response = new OrderItemUserDetailListResponse();

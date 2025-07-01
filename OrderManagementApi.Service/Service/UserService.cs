@@ -123,6 +123,8 @@ namespace OrderManagementApi.Service.Service
                 user.Name = userUpdateRequest.Name;
                 user.Surname = userUpdateRequest.Surname;
                 user.Email = userUpdateRequest.Email;
+                user.Username = userUpdateRequest.Username;
+                user.Password = userUpdateRequest.Password;
                 user.ModifiedById = 1;
                 user.ModifiedDate = DateTime.Now;
 
@@ -136,5 +138,28 @@ namespace OrderManagementApi.Service.Service
             }
             return response;
         }
+
+        public async Task<UserGetResponse> LoginControl(UserGetRequest userGetRequest)
+        {
+            UserGetResponse response = new UserGetResponse();
+            try
+            {
+                User user = await _userRepository.GetAsync(p => p.IsActive == true && p.Username == userGetRequest.Username && p.Password == userGetRequest.Password);
+
+                if (user == null)
+                {
+                    response.GenerateErrorResponse(MessageConstants.AUTH_ERROR);
+                    return response;
+                }
+                response.GenerateSuccessResponse();
+
+            }
+            catch (Exception ex)
+            {
+                response.GenerateErrorResponse(ex.Message);
+            }
+            return response;
+        }
+
     }
 }

@@ -24,7 +24,8 @@ public partial class OrderManagementContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=.;Database=OrderManagement;trustservercertificate=true; trusted_connection=true");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-83R1MUR;Database=OrderManagement;User Id=sa;Password=1234;TrustServerCertificate=True;Persist Security Info=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -90,7 +91,9 @@ public partial class OrderManagementContext : DbContext
             entity.Property(e => e.Email).HasMaxLength(150);
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
+            entity.Property(e => e.Password).HasMaxLength(200);
             entity.Property(e => e.Surname).HasMaxLength(100);
+            entity.Property(e => e.Username).HasMaxLength(100);
         });
 
         OnModelCreatingPartial(modelBuilder);
